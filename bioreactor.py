@@ -17,6 +17,65 @@ BROKER = "1e6503b2032f4e8b9088ae3b04f739e6.s1.eu.hivemq.cloud"
 PORT = 8883
 TOPIC = "test"
 
+class TextBox:
+    def __init__(self,width,height,text,bg_colour,x,y,minimum_val, maximmum_val,text_colour = (255,255,255), font_path = None):
+        self.width = width
+        self.height = height
+        self.text = text
+        self.bg_colour = bg_colour
+        self.text_colour = text_colour
+        self.data = ""
+        self.rect = pygame.Rect(x, y, width, height)
+        self.font_path = font_path if font_path else pygame.font.get_default_font()  # fallback font
+        self.active = False
+        self.minimum = minimum_val
+        self.maximum = maximmum_val
+    
+    def is_clicked(self, mouse_pos):
+        if self.rect.collidepoint(mouse_pos):
+            print("HELLO")
+            self.active = not self.active
+            return True
+        return False
+
+    def delete_char(self):
+        if self.data != "":
+            self.data = self.data[:-1]
+
+    def add_char(self,char):
+        self.data += char
+        print(self.data)
+
+    def draw(self,screen):
+        pygame.draw.rect(screen, self.bg_colour,self.rect,border_radius = 8)
+        try:
+            dummy = float(self.data)
+            if self.minimum<=dummy<=self.maximum:
+                self.bg_colour = (0,255,0)
+            else:
+                self.bg_colour = (255,0,0)
+
+        except:
+            self.bg_colour = (255,0,0)
+
+        font_size = 10
+        font = pygame.font.Font(self.font_path, font_size)
+        result = self.text+self.data
+        text_surface = font.render(result, True, self.text_colour)
+
+        while text_surface.get_width() < self.rect.width - 10 and text_surface.get_height() < self.rect.height - 10:
+            font_size += 1
+            font = pygame.font.Font(self.font_path, font_size)
+            text_surface = font.render(result, True, self.text_colour)
+
+        font_size -= 1
+        font = pygame.font.Font(self.font_path, font_size)
+        text_surface = font.render(result, True, self.text_colour)
+
+        text_rect = text_surface.get_rect(center=self.rect.center)
+        screen.blit(text_surface, text_rect)
+
+
 class Button:
     def __init__(self, width, height, text, bg_colour, x, y, text_colour=(255,255,255), font_path=None):
         self.width = width
@@ -174,14 +233,11 @@ def receive_inputs():
  
 total_data = []
  
-pH_increase = Button(150,50,"INCREASE pH",(0,255,0),screen_width//2 + 25, screen_height//2 + 25, (255,255,255),None)
-pH_decrease = Button(150,50,"DECREASE pH",(255,0,0),screen_width//2 + 225, screen_height//2 + 25, (255,255,255),None)
-RPM_increase = Button(150,50,"INCREASE SPEED",(0,255,0),screen_width//2 + 25, screen_height//2 + 130, (255,255,255),None)
-RPM_decrease = Button(150,50,"DECREASE SPEED",(255,0,0),screen_width//2 + 225, screen_height//2 + 130, (255,255,255),None)
-Temperature_increase = Button(150,50,"INCREASE TEMP",(0,255,0),screen_width//2 + 25, screen_height//2 + 235, (255,255,255),None)
-Temperature_decrease = Button(150,50,"DECREASE TEMP",(255,0,0),screen_width//2 + 225, screen_height//2 + 235, (255,255,255),None)
+pH_textbox = TextBox(150,50,"pH:",(0,255,0),screen_width//2 + 25, screen_height//2 + 25,3.0,7.0, (255,255,255),None)
+RPM_textbox = TextBox(150,50,"RPM:",(0,255,0),screen_width//2 + 25, screen_height//2 + 130,500.0,1500.0, (255,255,255),None)
+temperature_textbox = TextBox(150,50,"TEMP:",(0,255,0),screen_width//2 + 25, screen_height//2 + 235,25,35, (255,255,255),None)
 
-current_font = pygame.font.SysFont("Arial",20)
+current_font = pygame.font.SysFont("Arial",15)
 publish(client, set_points)
 curr_time = 0
 while run == True:
@@ -194,35 +250,63 @@ while run == True:
     screen.blit(current_text_surface,(screen_width//2+10,screen_height//2 + 340))
     current_text_surface = current_font.render(f"pH Target: {set_points[0]} Motor Target: {set_points[1]} Heating Target: {set_points[2]}", True, (255,255,255))
     screen.blit(current_text_surface,(screen_width//2+10,screen_height//2 + 370))
-    pH_increase.draw(screen)
-    pH_decrease.draw(screen)
-    RPM_increase.draw(screen)
-    RPM_decrease.draw(screen)
-    Temperature_increase.draw(screen)
-    Temperature_decrease.draw(screen)
-    
+
+
+    pH_textbox.draw(screen)
+    RPM_textbox.draw(screen)
+    temperature_textbox.draw(screen)    
     for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if pH_increase.is_clicked(event.pos):
-                    flag = True
-                    set_points[0] += 0.1
-                elif pH_decrease.is_clicked(event.pos):
-                    flag = True
-                    set_points[0] -= 0.1
-                elif RPM_increase.is_clicked(event.pos):
-                    flag = True
-                    set_points[1] += 2
-                elif RPM_decrease.is_clicked(event.pos):
-                    flag = True
-                    set_points[1] -= 2
-                elif Temperature_increase.is_clicked(event.pos):
-                    flag = True
-                    set_points[2] += 1
-                elif Temperature_decrease.is_clicked(event.pos):
-                    flag = True
-                    set_points[2] -= 1
+                check = pH_textbox.is_clicked(event.pos)
+                if check:
+                    RPM_textbox.active = False
+                    temperature_textbox.active = False
+                check = RPM_textbox.is_clicked(event.pos)
+                if check:
+                    pH_textbox.active = False
+                    temperature_textbox.active = False
+                check = temperature_textbox.is_clicked(event.pos)
+                if check:
+                    RPM_textbox.active = False
+                    pH_textbox.active = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    if pH_textbox.active:
+                        pH_textbox.delete_char()
+                    elif RPM_textbox.active:
+                        RPM_textbox.delete_char()
+                    elif temperature_textbox.active:
+                        temperature_textbox.delete_char()
+                    
+                elif pH_textbox.active:
+                    pH_textbox.add_char(event.unicode)
+                elif temperature_textbox.active:
+                    temperature_textbox.add_char(event.unicode)
+                elif RPM_textbox.active:
+                    RPM_textbox.add_char(event.unicode)
+    try:
+        dummy = float(pH_textbox.data)
+        if dummy != set_points[0] and pH_textbox.minimum <= dummy <= pH_textbox.maximum:
+            set_points[0] = dummy
+            flag = True
+    except:
+        pass
+    try:
+        dummy = float(RPM_textbox.data)
+        if dummy != set_points[1] and RPM_textbox.minimum <= dummy <= RPM_textbox.maximum:
+            set_points[1] = dummy
+            flag = True
+    except:
+        pass
+    try:
+        dummy = float(temperature_textbox.data)
+        if dummy != set_points[2] and temperature_textbox.minimum <= dummy <= temperature_textbox.maximum:
+            set_points[2] = dummy
+            flag = True
+    except:
+        pass
     if flag == True:
         publish(client, set_points)
 
