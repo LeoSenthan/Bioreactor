@@ -1,0 +1,102 @@
+{
+  "temperature_C.mean": {
+    "mean": 29.996788626614254,
+    "stdev": 0.014752792336843288,
+    "samples": 158
+  },
+  "temperature_C.min": {
+    "mean": 29.92742159067318,
+    "stdev": 0.027142621553797427,
+    "samples": 158
+  },
+  "temperature_C.max": {
+    "mean": 30.063949430697267,
+    "stdev": 0.025292324228180264,
+    "samples": 158
+  },
+  "pH.mean": {
+    "mean": 5.015925496321936,
+    "stdev": 0.10792589497486602,
+    "samples": 158
+  },
+  "pH.min": {
+    "mean": 4.9630390606589065,
+    "stdev": 0.10650123859963227,
+    "samples": 158
+  },
+  "pH.max": {
+    "mean": 5.070460959232883,
+    "stdev": 0.11323658871790264,
+    "samples": 158
+  },
+  "rpm.mean": {
+    "mean": 1000.1389878495137,
+    "stdev": 5.692951374073455,
+    "samples": 158
+  },
+  "rpm.min": {
+    "mean": 978.3767055422761,
+    "stdev": 9.56267805054218,
+    "samples": 158
+  },
+  "rpm.max": {
+    "mean": 1022.7252896554252,
+    "stdev": 9.442148965177305,
+    "samples": 158
+  },
+  "actuators_avg.heater_pwm": {
+    "mean": 0.463570673236376,
+    "stdev": 0.0032147831587432812,
+    "samples": 158
+  },
+  "actuators_avg.motor_pwm": {
+    "mean": 0.8498305247316843,
+    "stdev": 0.0025536915495218164,
+    "samples": 158
+  },
+  "actuators_avg.acid_pwm": {
+    "mean": 0.0017116146031626246,
+    "stdev": 0.0033316354913278472,
+    "samples": 158
+  },
+  "actuators_avg.base_pwm": {
+    "mean": 0.0009652780019553935,
+    "stdev": 0.0018632601969176294,
+    "samples": 158
+  },
+  "dosing_l.acid": {
+    "mean": 4.34261098018106e-05,
+    "stdev": 1.9614969214860955e-05,
+    "samples": 158
+  },
+  "dosing_l.base": {
+    "mean": 4.257139548029953e-05,
+    "stdev": 1.9129365994458e-05,
+    "samples": 158
+  },
+  "heater_energy_Wh": {
+    "mean": 0.017636244144892666,
+    "stdev": 0.0008500415631264981,
+    "samples": 158
+  },
+  "photoevents": {
+    "mean": 35.335443037974684,
+    "stdev": 2.393224936909502,
+    "samples": 158
+  },
+  "setpoints.temperature_C": {
+    "mean": 30.0,
+    "stdev": 0.0,
+    "samples": 158
+  },
+  "setpoints.pH": {
+    "mean": 5.0,
+    "stdev": 0.0,
+    "samples": 158
+  },
+  "setpoints.rpm": {
+    "mean": 1000.0,
+    "stdev": 0.0,
+    "samples": 158
+  }
+}

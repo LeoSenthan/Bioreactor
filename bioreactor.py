@@ -11,7 +11,7 @@ import ssl
 
 results = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 # ph , RPM, temp
-set_points = [25.0, 10.0, 10.0]
+set_points = [7.0, 800.0, 30.0]
 pygame.init()
 
 BROKER = "1e6503b2032f4e8b9088ae3b04f739e6.s1.eu.hivemq.cloud"
@@ -391,7 +391,7 @@ RPM_textbox = TextBox(
     (0, 255, 0),
     screen_width // 2 + 25,
     screen_height // 2 + 130,
-    500.0,
+    0.0,
     1500.0,
     (255, 255, 255),
     None,
@@ -490,7 +490,7 @@ while run == True:
                 RPM_textbox.add_char(event.unicode)
     try:
         dummy = float(pH_textbox.data)
-        if dummy != set_points[0] and pH_textbox.minimum <= dummy <= pH_textbox.maximum:
+        if dummy != -1 and pH_textbox.minimum <= dummy <= pH_textbox.maximum:
             set_points[0] = dummy
             flag = True
     except:
@@ -498,7 +498,7 @@ while run == True:
     try:
         dummy = float(RPM_textbox.data)
         if (
-            dummy != set_points[1]
+            dummy != -1
             and RPM_textbox.minimum <= dummy <= RPM_textbox.maximum
         ):
             set_points[1] = dummy
@@ -508,7 +508,7 @@ while run == True:
     try:
         dummy = float(temperature_textbox.data)
         if (
-            dummy != set_points[2]
+            dummy != -1
             and temperature_textbox.minimum <= dummy <= temperature_textbox.maximum
         ):
             set_points[2] = dummy
