@@ -15,6 +15,7 @@ pygame.init()
  
 BROKER = "1e6503b2032f4e8b9088ae3b04f739e6.s1.eu.hivemq.cloud"
 PORT = 8883
+INITTOPIC = "init"
 TOPIC = "test"
 
 class TextBox:
@@ -56,9 +57,11 @@ class TextBox:
                 self.bg_colour = (0,255,0)
             else:
                 self.bg_colour = (255,0,0)
-
         except:
-            self.bg_colour = (255,0,0)
+            if self.active == True:
+                self.bg_colour = (0,255,0)
+            else:
+                self.bg_colour = (255,0,0)
 
         font_size = 10
         font = pygame.font.Font(self.font_path, font_size)
@@ -175,7 +178,39 @@ except pygame.error:
     sys.exit(1)
 pygame.display.set_caption("BioReactor")
  
- 
+class Button:
+    def __init__(self, width, height, text, bg_colour, x, y, text_colour=(255,255,255), font_path=None):
+        self.width = width
+        self.height = height
+        self.text = text
+        self.bg_colour = bg_colour
+        self.text_colour = text_colour
+        self.rect = pygame.Rect(x, y, width, height)
+        self.font_path = font_path if font_path else pygame.font.get_default_font()  # fallback font
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.bg_colour, self.rect, border_radius=8)
+
+        font_size = 10
+        font = pygame.font.Font(self.font_path, font_size)
+        text_surface = font.render(self.text, True, self.text_colour)
+
+        while text_surface.get_width() < self.rect.width - 10 and text_surface.get_height() < self.rect.height - 10:
+            font_size += 1
+            font = pygame.font.Font(self.font_path, font_size)
+            text_surface = font.render(self.text, True, self.text_colour)
+
+        font_size -= 1
+        font = pygame.font.Font(self.font_path, font_size)
+        text_surface = font.render(self.text, True, self.text_colour)
+
+        text_rect = text_surface.get_rect(center=self.rect.center)
+        screen.blit(text_surface, text_rect)
+
+    def is_clicked(self, mouse_pos):
+        return self.rect.collidepoint(mouse_pos) 
+
+
 class Graph():
     def __init__(self,xpoints,ypoints,vpoints,xlabels,ylabels,vlabels,graph_name,min_value,max_value):
         self.xpoints = xpoints
@@ -240,6 +275,10 @@ RPM_textbox = TextBox(150,50,"RPM:",(0,255,0),screen_width//2 + 25, screen_heigh
 temperature_textbox = TextBox(150,50,"TEMP:",(0,255,0),screen_width//2 + 25, screen_height//2 + 235,25,35, (255,255,255),None)
 
 current_font = pygame.font.SysFont("Arial",15)
+
+initialize = Button (150,50, "INIT",(0,255,0),screen_width//2 + 200, screen_height//2 + 25, (255,255,255),None )
+
+
 publish(client, set_points)
 curr_time = 0
 while run == True:
@@ -252,8 +291,7 @@ while run == True:
     screen.blit(current_text_surface,(screen_width//2+10,screen_height//2 + 340))
     current_text_surface = current_font.render(f"pH Target: {set_points[0]} Motor Target: {set_points[1]} Heating Target: {set_points[2]}", True, (255,255,255))
     screen.blit(current_text_surface,(screen_width//2+10,screen_height//2 + 370))
-
-
+    initialize.draw(screen)
     pH_textbox.draw(screen)
     RPM_textbox.draw(screen)
     temperature_textbox.draw(screen)    
@@ -261,6 +299,8 @@ while run == True:
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
+                if initialize.is_clicked(event.pos):
+                    result = client.publish("INIT", "INIT")
                 check = pH_textbox.is_clicked(event.pos)
                 if check:
                     RPM_textbox.active = False
