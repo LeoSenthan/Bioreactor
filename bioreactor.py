@@ -50,7 +50,9 @@ class TextBox:
         pygame.draw.rect(screen, self.bg_colour,self.rect,border_radius = 8)
         try:
             dummy = float(self.data)
-            if self.minimum<=dummy<=self.maximum:
+            if self.active == True:
+                self.bg_colour = (0,0,255)
+            elif self.minimum<=dummy<=self.maximum:
                 self.bg_colour = (0,255,0)
             else:
                 self.bg_colour = (255,0,0)
